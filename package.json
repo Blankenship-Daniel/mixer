@@ -1,0 +1,25 @@
+{
+  "name": "mixer",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/Blankenship-Daniel/mixer.git",
+  "author": "Daniel Blankenship <daniel@goreact.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/react": "^16.4.18",
+    "@types/react-dom": "^16.0.9",
+    "parcel-bundler": "^1.10.3",
+    "tslint": "^5.11.0",
+    "tslint-react": "^3.6.0",
+    "typescript": "^3.1.6"
+  },
+  "scripts": {
+    "dev": "parcel src/index.html",
+    "build": "parcel build src/index.html"
+  },
+  "dependencies": {
+    "react": "^16.6.1",
+    "react-dom": "^16.6.1",
+    "redux": "^4.0.1"
+  }
+}
