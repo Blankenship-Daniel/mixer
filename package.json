@@ -18,8 +18,10 @@
     "build": "parcel build src/index.html"
   },
   "dependencies": {
+    "@material-ui/core": "^3.5.1",
     "react": "^16.6.1",
     "react-dom": "^16.6.1",
+    "react-jss": "^8.6.1",
     "redux": "^4.0.1"
   }
 }

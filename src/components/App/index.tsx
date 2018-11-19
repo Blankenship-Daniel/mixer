@@ -1,11 +1,20 @@
 import * as React from 'react';
+import AudioTrack from '../AudioTrack';
+import { withRoot } from '../../withRoot';
+import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
+import { styles } from '../../theme';
 
-export class App extends React.Component {
-	render() {
-		return (
-			<div>
-				<h1>Hello World!</h1>
-			</div>
-		);
-	}
+type State = {};
+
+class App extends React.Component<WithStyles<typeof styles>, State> {
+  render() {
+    return (
+      <div>
+        <AudioTrack />
+        <AudioTrack />
+      </div>
+    );
+  }
 }
+
+export default withRoot(withStyles(styles)(App));
