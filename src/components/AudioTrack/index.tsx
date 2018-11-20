@@ -13,16 +13,18 @@ class AudioTrack extends React.Component<WithStyles<typeof styles>, {}> {
   render() {
     const { classes } = this.props;
     return (
-      <Card className={classes.card}>
-        <CardContent>
-          <Typography component="h5" variant="h5">
-            Blaze On
-          </Typography>
-          <Typography variant="subtitle1" color="textSecondary">
-            Phish
-          </Typography>
-        </CardContent>
-      </Card>
+      <div draggable>
+        <Card className={classes.card}>
+          <CardContent>
+            <Typography component="h5" variant="h5">
+              Blaze On
+            </Typography>
+            <Typography variant="subtitle1" color="textSecondary">
+              Phish
+            </Typography>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 }
