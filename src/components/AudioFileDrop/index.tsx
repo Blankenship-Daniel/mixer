@@ -2,6 +2,8 @@ import * as React from 'react';
 import { styles } from './styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import classNames from 'classnames';
+import { getMetadata } from './get-metadata';
+import { sanitizeFiles } from './sanitize-files';
 
 const initialState = {
   isHovered: false,
@@ -17,11 +19,12 @@ class AudioFileDrop extends React.Component<Props, State> {
     super(props);
   }
 
-  private onDrop(e) {
+  private async onDrop(e) {
     this.preventDefaults(e);
-    const dt = e.dataTransfer;
-    const files = dt.files;
-    console.log('onDrop', files);
+    const dt: DataTransfer = e.dataTransfer;
+    const files: FileList = dt.files;
+    const meta: any[] = await getMetadata(sanitizeFiles(files));
+    console.log(meta);
     this.setState({
       isHovered: false,
     });
@@ -45,7 +48,7 @@ class AudioFileDrop extends React.Component<Props, State> {
     this.preventDefaults(e);
   }
 
-  private preventDefaults(e) {
+  private preventDefaults(e: Event) {
     e.preventDefault();
     e.stopPropagation();
   }

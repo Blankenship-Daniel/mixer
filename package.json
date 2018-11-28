@@ -20,9 +20,11 @@
   "dependencies": {
     "@material-ui/core": "^3.5.1",
     "classnames": "^2.2.6",
+    "id3-parser": "^2.0.0",
     "react": "^16.6.1",
     "react-dom": "^16.6.1",
     "react-jss": "^8.6.1",
-    "redux": "^4.0.1"
+    "redux": "^4.0.1",
+    "uuid": "^3.3.2"
   }
 }
