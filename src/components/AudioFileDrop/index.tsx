@@ -17,20 +17,37 @@ class AudioFileDrop extends React.Component<Props, State> {
     super(props);
   }
 
-  private onDragOver(e) {
-    console.log('onDragOver', this.state.isHovered);
+  private onDrop(e) {
+    this.preventDefaults(e);
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    console.log('onDrop', files);
+    this.setState({
+      isHovered: false,
+    });
   }
 
   private onDragEnter(e) {
+    this.preventDefaults(e);
     this.setState({
       isHovered: true,
     });
   }
 
   private onDragLeave(e) {
+    this.preventDefaults(e);
     this.setState({
       isHovered: false,
     });
+  }
+
+  private onDragOver(e) {
+    this.preventDefaults(e);
+  }
+
+  private preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
   }
 
   render() {
@@ -41,9 +58,10 @@ class AudioFileDrop extends React.Component<Props, State> {
     return (
       <div
         className={dragAndDropClasses}
-        onDragOver={e => this.onDragOver(e)}
+        onDrop={e => this.onDrop(e)}
         onDragEnter={e => this.onDragEnter(e)}
         onDragLeave={e => this.onDragLeave(e)}
+        onDragOver={e => this.onDragOver(e)}
       />
     );
   }
