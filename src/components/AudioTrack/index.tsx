@@ -5,7 +5,10 @@ import Typography from '@material-ui/core/Typography';
 import { styles } from './styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 
-class AudioTrack extends React.Component<WithStyles<typeof styles>, {}> {
+type Props = WithStyles<typeof styles>;
+type State = {};
+
+class AudioTrack extends React.Component<Props, State> {
   constructor(props) {
     super(props);
   }
