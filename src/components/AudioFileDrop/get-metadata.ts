@@ -8,6 +8,7 @@ export const getMetadata = async (files: File[]): Promise<any[]> => {
     const tag = await universalParse(files[i]);
     tag.id = uuid();
     tag.imageDataUrl = tag.image ? createDataUrl(tag.image) : '';
+    delete tag.image; // No reason to keep all of this data in memory once we've generated the imageDataUrl
     tags.push(tag);
   }
   return tags;

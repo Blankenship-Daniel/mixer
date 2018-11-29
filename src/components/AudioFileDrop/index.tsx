@@ -1,9 +1,11 @@
 import * as React from 'react';
+import { compose } from 'redux';
 import { styles } from './styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import classNames from 'classnames';
 import { getMetadata } from './get-metadata';
 import { sanitizeFiles } from './sanitize-files';
+import { preventDefaults } from './prevent-defaults';
 
 const initialState = {
   isHovered: false,
@@ -15,56 +17,61 @@ type State = Readonly<typeof initialState>;
 class AudioFileDrop extends React.Component<Props, State> {
   readonly state: State = initialState;
 
-  constructor(props) {
-    super(props);
-  }
-
-  private async onDrop(e) {
-    this.preventDefaults(e);
-    const dt: DataTransfer = e.dataTransfer;
-    const files: FileList = dt.files;
-    const meta: any[] = await getMetadata(sanitizeFiles(files));
-    console.log(meta);
-    this.setState({
-      isHovered: false,
+  private dragAndDropClasses(): string {
+    const { classes } = this.props;
+    return classNames(classes.audioFileDropContainer, {
+      [classes.hover]: this.state.isHovered,
     });
   }
 
-  private onDragEnter(e) {
-    this.preventDefaults(e);
+  private onDrop = async e => {
+    const files: FileList = e.dataTransfer.files;
+    const audioMeta: any[] = await compose(
+      getMetadata,
+      sanitizeFiles,
+    )(files);
+
+    console.log(audioMeta);
+
+    this.setState({
+      isHovered: false,
+    });
+  };
+
+  private onDragEnter = e => {
     this.setState({
       isHovered: true,
     });
-  }
+  };
 
-  private onDragLeave(e) {
-    this.preventDefaults(e);
+  private onDragLeave = e => {
     this.setState({
       isHovered: false,
     });
-  }
+  };
 
-  private onDragOver(e) {
-    this.preventDefaults(e);
-  }
-
-  private preventDefaults(e: Event) {
+  private preventDefaults = e => {
     e.preventDefault();
     e.stopPropagation();
-  }
+  };
 
   render() {
-    const { classes } = this.props;
-    const dragAndDropClasses = classNames(classes.fileDropContainer, {
-      [classes.hover]: this.state.isHovered,
-    });
     return (
       <div
-        className={dragAndDropClasses}
-        onDrop={e => this.onDrop(e)}
-        onDragEnter={e => this.onDragEnter(e)}
-        onDragLeave={e => this.onDragLeave(e)}
-        onDragOver={e => this.onDragOver(e)}
+        className={this.dragAndDropClasses()}
+        onDrop={e => {
+          this.preventDefaults(e);
+          this.onDrop(e);
+        }}
+        onDragEnter={e => {
+          this.preventDefaults(e);
+          this.onDragEnter(e);
+        }}
+        onDragLeave={e => {
+          this.preventDefaults(e);
+          this.onDragLeave(e);
+        }}
+        onDragOver={e => this.preventDefaults(e)}
       />
     );
   }

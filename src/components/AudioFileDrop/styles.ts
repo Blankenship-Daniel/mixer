@@ -3,7 +3,7 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 
 export const styles = (theme: Theme) =>
   createStyles({
-    fileDropContainer: {
+    audioFileDropContainer: {
       display: 'block',
       position: 'fixed',
       top: '0',
