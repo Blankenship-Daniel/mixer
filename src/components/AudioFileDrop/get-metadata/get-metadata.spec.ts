@@ -25,6 +25,7 @@ describe('getMetadata', () => {
       artist: 'Phish',
       band: 'Phish',
       genre: 'Rock',
+      image: { data: [1, 2, 3] },
       title: 'Fee',
       track: '6/0',
       year: '1989',
@@ -33,9 +34,10 @@ describe('getMetadata', () => {
     jest.spyOn(parse, 'default').mockReturnValue(mockReturnValue);
     jest.spyOn(uuid, 'v1').mockReturnValue(mockId);
     const audioMeta: AudioMetaTag[] = await getMetadata(mockFiles);
-    const expectedAudioMeta: AudioMetaTag[] = audioMeta.map(tag => {
-      return { ...tag, id: mockId, imageDataUrl: '' };
+    audioMeta.forEach(meta => {
+      expect(meta).toHaveProperty('id');
+      expect(meta).not.toHaveProperty('image');
+      expect(meta).toHaveProperty('imageDataUrl');
     });
-    expect(audioMeta).toEqual(expectedAudioMeta);
   });
 });
