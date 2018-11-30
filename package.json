@@ -6,20 +6,25 @@
   "author": "Daniel Blankenship <daniel@goreact.com>",
   "license": "MIT",
   "devDependencies": {
+    "@types/jest": "^23.3.10",
     "@types/react": "^16.4.18",
     "@types/react-dom": "^16.0.9",
+    "jest": "^23.6.0",
     "parcel-bundler": "^1.10.3",
     "redux-devtools-extension": "^2.13.7",
+    "ts-jest": "^23.10.5",
     "tslint": "^5.11.0",
     "tslint-react": "^3.6.0",
     "typescript": "^3.1.6"
   },
   "scripts": {
     "dev": "parcel src/index.html",
-    "build": "parcel build src/index.html"
+    "build": "parcel build src/index.html",
+    "test": "npx jest"
   },
   "dependencies": {
     "@material-ui/core": "^3.5.1",
+    "@types/uuid": "^3.4.4",
     "classnames": "^2.2.6",
     "id3-parser": "^2.0.0",
     "react": "^16.6.1",

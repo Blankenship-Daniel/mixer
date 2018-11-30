@@ -3,9 +3,8 @@ import { compose } from 'redux';
 import { styles } from './styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import classNames from 'classnames';
-import { getMetadata } from './get-metadata';
+import { getMetadata } from './get-metadata/get-metadata';
 import { sanitizeFiles } from './sanitize-files';
-import { preventDefaults } from './prevent-defaults';
 
 const initialState = {
   isHovered: false,
@@ -25,13 +24,11 @@ class AudioFileDrop extends React.Component<Props, State> {
   }
 
   private onDrop = async e => {
-    const files: FileList = e.dataTransfer.files;
+    const files = Array.from(e.dataTransfer.files);
     const audioMeta: any[] = await compose(
       getMetadata,
       sanitizeFiles,
     )(files);
-
-    console.log(audioMeta);
 
     this.setState({
       isHovered: false,
