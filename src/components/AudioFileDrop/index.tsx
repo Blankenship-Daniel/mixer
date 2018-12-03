@@ -28,13 +28,12 @@ type State = Readonly<typeof initialState>;
 class AudioFileDrop extends React.Component<Props, State> {
   readonly state: State = initialState;
 
-  private dragAndDropClasses(): string {
-    const { classes } = this.props;
+  private dragAndDropClasses = (classes): string => {
     return classNames(classes.audioFileDropContainer, {
       [classes.hover]: this.state.isHovered,
       [classes.hide]: this.state.isHidden,
     });
-  }
+  };
 
   private onDrop = async e => {
     this.setState({ isHidden: true, isHovered: false });
@@ -83,9 +82,10 @@ class AudioFileDrop extends React.Component<Props, State> {
   };
 
   render() {
+    const { classes } = this.props;
     return (
       <div
-        className={this.dragAndDropClasses()}
+        className={this.dragAndDropClasses(classes)}
         onDrop={this.onDropEvent}
         onDragEnter={this.onDragEnterEvent}
         onDragLeave={this.onDragLeaveEvent}

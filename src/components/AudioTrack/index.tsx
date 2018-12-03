@@ -6,10 +6,17 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import Pause from '@material-ui/icons/Pause';
 import SkipNextIcon from '@material-ui/icons/SkipNext';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import { styles } from './styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
+import classNames from 'classnames';
+
+const initialState = {
+  src: '',
+  isHovered: false,
+};
 
 interface IncomingProps {
   uuid: string;
@@ -22,15 +29,59 @@ interface IncomingProps {
 }
 
 type Props = WithStyles<typeof styles> & IncomingProps;
-interface State {
-  src: string;
-}
+type State = Readonly<typeof initialState>;
 
 class AudioTrack extends React.Component<Props, State> {
+  readonly state: State = initialState;
+
+  private audio: HTMLAudioElement;
+
+  constructor(props: Props) {
+    super(props);
+    this.audio = new Audio(props.src);
+  }
+
+  private playAudio = () => {
+    this.audio.play();
+  };
+
+  private pauseAudio = () => {
+    this.audio.pause();
+  };
+
+  public onMouseEnterEvent = e => {
+    this.setState({ isHovered: true });
+  };
+
+  public onMouseLeaveEvent = e => {
+    this.setState({ isHovered: false });
+  };
+
   render() {
     const { classes } = this.props;
+    const deleteIconClasses = (classes): string => {
+      return classNames(classes.deleteIcon, {
+        [classes.show]: this.state.isHovered,
+      });
+    };
+    const playIconClasses = (classes): string => {
+      return classNames(classes.playPauseIcon, {
+        [classes.hide]: !this.audio.paused,
+      });
+    };
+    const pauseIconClasses = (classes): string => {
+      return classNames(classes.playPauseIcon, {
+        [classes.hide]: this.audio.paused,
+      });
+    };
+
     return (
-      <div draggable>
+      <div
+        onMouseOver={this.onMouseEnterEvent}
+        onMouseEnter={this.onMouseEnterEvent}
+        onMouseLeave={this.onMouseLeaveEvent}
+        draggable
+      >
         <Card className={classes.card}>
           <div className={classes.details}>
             <CardContent className={classes.content}>
@@ -50,8 +101,12 @@ class AudioTrack extends React.Component<Props, State> {
               </IconButton>
               <IconButton aria-label="Play/pause">
                 <PlayArrowIcon
-                  onClick={e => new Audio(this.props.src).play()}
-                  className={classes.playIcon}
+                  onClick={() => this.playAudio()}
+                  className={playIconClasses(classes)}
+                />
+                <Pause
+                  onClick={() => this.pauseAudio()}
+                  className={pauseIconClasses(classes)}
                 />
               </IconButton>
               <IconButton aria-label="Next">
@@ -61,7 +116,7 @@ class AudioTrack extends React.Component<Props, State> {
           </div>
           <CardMedia className={classes.cover} image={this.props.image} />
           <DeleteForeverIcon
-            className={classes.deleteIcon}
+            className={deleteIconClasses(classes)}
             onClick={() => this.props.delete(this.props.uuid)}
           />
         </Card>

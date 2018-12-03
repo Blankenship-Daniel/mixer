@@ -10,6 +10,7 @@ describe('getMetadata', () => {
       Object.defineProperty(window.URL, 'createObjectURL', { value: () => {} });
     }
   });
+
   it('should return AudioMetaTags for a given FileList', async () => {
     const mockFiles: File[] = [
       {
@@ -40,6 +41,7 @@ describe('getMetadata', () => {
     const mockId: string = '123';
     jest.spyOn(parse, 'default').mockReturnValue(mockReturnValue);
     jest.spyOn(uuid, 'v1').mockReturnValue(mockId);
+
     const audioMeta: AudioMetaTag[] = await getMetadata(mockFiles);
     audioMeta.forEach(meta => {
       expect(meta).toHaveProperty('id');

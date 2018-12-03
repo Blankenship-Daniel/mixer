@@ -10,11 +10,15 @@ export const styles = (theme: Theme) =>
       justifyContent: 'space-between',
     },
     deleteIcon: {
+      display: 'none',
       position: 'absolute',
       top: theme.spacing.unit,
       right: theme.spacing.unit,
-      color: theme.palette.action.active,
+      color: theme.palette.secondary.dark,
       cursor: 'pointer',
+      '&:hover': {
+        color: theme.palette.secondary.light,
+      },
     },
     details: {
       display: 'flex',
@@ -32,8 +36,11 @@ export const styles = (theme: Theme) =>
       paddingLeft: theme.spacing.unit,
       paddingBottom: theme.spacing.unit,
     },
-    playIcon: {
+    playPauseIcon: {
       height: 38,
       width: 38,
+    },
+    hide: {
+      display: 'none',
     },
   });
