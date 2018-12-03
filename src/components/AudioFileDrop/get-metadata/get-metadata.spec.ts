@@ -3,6 +3,13 @@ import * as parse from 'id3-parser/lib/universal';
 import { AudioMetaTag, getMetadata } from './get-metadata';
 
 describe('getMetadata', () => {
+  beforeEach(() => {
+    // NOTICE: this is a workaround for the following reported issue:
+    // https://github.com/jsdom/jsdom/issues/1721
+    if (typeof window.URL.createObjectURL === 'undefined') {
+      Object.defineProperty(window.URL, 'createObjectURL', { value: () => {} });
+    }
+  });
   it('should return AudioMetaTags for a given FileList', async () => {
     const mockFiles: File[] = [
       {
@@ -38,6 +45,7 @@ describe('getMetadata', () => {
       expect(meta).toHaveProperty('id');
       expect(meta).not.toHaveProperty('image');
       expect(meta).toHaveProperty('imageDataUrl');
+      expect(meta).toHaveProperty('src');
     });
   });
 });

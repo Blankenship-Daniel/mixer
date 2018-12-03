@@ -1,16 +1,28 @@
 import * as React from 'react';
 import { compose } from 'redux';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { styles } from './styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import classNames from 'classnames';
-import { getMetadata } from './get-metadata/get-metadata';
+import { AudioMetaTag, getMetadata } from './get-metadata/get-metadata';
 import { sanitizeFiles } from './sanitize-files';
+import { setAudioMeta } from '../../store/audio/actions';
 
 const initialState = {
   isHovered: false,
+  isHidden: false,
 };
 
-type Props = WithStyles<typeof styles>;
+interface IncomingProps {
+  children: React.ReactChildren;
+}
+
+interface PropsFromDispatch {
+  setAudioMeta: Function;
+}
+
+type Props = WithStyles<typeof styles> & IncomingProps & PropsFromDispatch;
 type State = Readonly<typeof initialState>;
 
 class AudioFileDrop extends React.Component<Props, State> {
@@ -20,19 +32,18 @@ class AudioFileDrop extends React.Component<Props, State> {
     const { classes } = this.props;
     return classNames(classes.audioFileDropContainer, {
       [classes.hover]: this.state.isHovered,
+      [classes.hide]: this.state.isHidden,
     });
   }
 
   private onDrop = async e => {
-    const files = Array.from(e.dataTransfer.files);
-    const audioMeta: any[] = await compose(
+    this.setState({ isHidden: true, isHovered: false });
+    const files: File[] = Array.from(e.dataTransfer.files);
+    const audioMeta: AudioMetaTag[] = await compose(
       getMetadata,
       sanitizeFiles,
     )(files);
-
-    this.setState({
-      isHovered: false,
-    });
+    this.props.setAudioMeta(audioMeta);
   };
 
   private onDragEnter = e => {
@@ -52,26 +63,52 @@ class AudioFileDrop extends React.Component<Props, State> {
     e.stopPropagation();
   };
 
+  public onDropEvent = e => {
+    this.preventDefaults(e);
+    this.onDrop(e);
+  };
+
+  public onDragEnterEvent = e => {
+    this.preventDefaults(e);
+    this.onDragEnter(e);
+  };
+
+  public onDragLeaveEvent = e => {
+    this.preventDefaults(e);
+    this.onDragLeave(e);
+  };
+
+  public onDragOverEvent = e => {
+    this.preventDefaults(e);
+  };
+
   render() {
     return (
       <div
         className={this.dragAndDropClasses()}
-        onDrop={e => {
-          this.preventDefaults(e);
-          this.onDrop(e);
-        }}
-        onDragEnter={e => {
-          this.preventDefaults(e);
-          this.onDragEnter(e);
-        }}
-        onDragLeave={e => {
-          this.preventDefaults(e);
-          this.onDragLeave(e);
-        }}
-        onDragOver={e => this.preventDefaults(e)}
-      />
+        onDrop={this.onDropEvent}
+        onDragEnter={this.onDragEnterEvent}
+        onDragLeave={this.onDragLeaveEvent}
+        onDragOver={this.onDragOverEvent}
+      >
+        {this.props.children}
+      </div>
     );
   }
 }
 
-export default withStyles(styles)(AudioFileDrop);
+const mapDispatchToProps = dispatch => {
+  return bindActionCreators(
+    {
+      setAudioMeta,
+    },
+    dispatch,
+  );
+};
+
+export default withStyles(styles)(
+  connect(
+    undefined,
+    mapDispatchToProps,
+  )(AudioFileDrop),
+);

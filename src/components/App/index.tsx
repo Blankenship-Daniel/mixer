@@ -1,6 +1,8 @@
 import * as React from 'react';
-import AudioTrack from '../AudioTrack';
+import { compose } from 'redux';
+import AudioTrackList from '../AudioTrackList';
 import AudioFileDrop from '../AudioFileDrop';
+import SplashScreen from '../SplashScreen';
 import { withRoot } from '../../withRoot';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import { styles } from '../../theme';
@@ -13,11 +15,14 @@ class App extends React.Component<Props, State> {
     return (
       <div>
         <AudioFileDrop />
-        <AudioTrack />
-        <AudioTrack />
+        <AudioTrackList />
+        <SplashScreen />
       </div>
     );
   }
 }
 
-export default withRoot(withStyles(styles)(App));
+export default compose(
+  withRoot,
+  withStyles(styles),
+)(App);

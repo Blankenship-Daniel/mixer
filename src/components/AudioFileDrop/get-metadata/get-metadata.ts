@@ -9,6 +9,7 @@ export interface AudioMetaTag {
   genre: string;
   id: string;
   imageDataUrl: string;
+  src: string;
   title: string;
   track: string;
   version: any;
@@ -20,6 +21,7 @@ export const getMetadata = async (files: File[]): Promise<AudioMetaTag[]> => {
   for (let i = 0; i < files.length; i++) {
     const tag = await universalParse(files[i]);
     tag.id = uuid.v1();
+    tag.src = URL.createObjectURL(files[i]);
     tag.imageDataUrl = tag.image ? createDataUrl(tag.image) : '';
     delete tag.image; // No reason to keep all of this data in memory once we've generated the imageDataUrl
     tags.push(tag);
