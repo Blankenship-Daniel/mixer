@@ -33,21 +33,8 @@ export const styles = (theme: Theme) =>
     cover: {
       width: 200,
     },
-    controls: {
-      display: 'flex',
-      alignItems: 'center',
-      paddingLeft: theme.spacing.unit,
-      paddingBottom: theme.spacing.unit,
-    },
-    playPauseIcon: {
-      height: 38,
-      width: 38,
-    },
     show: {
       display: 'block',
-    },
-    hide: {
-      display: 'none',
     },
     progressBar: {
       width: '100%',

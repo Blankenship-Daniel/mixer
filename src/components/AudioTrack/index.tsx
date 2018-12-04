@@ -5,19 +5,11 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import SkipPreviousIcon from '@material-ui/icons/SkipPrevious';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import Pause from '@material-ui/icons/Pause';
-import SkipNextIcon from '@material-ui/icons/SkipNext';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import AudioProgressBar from '../AudioProgressBar';
+import PlayerControls from '../PlayerControls';
 import { styles } from './styles/styles';
-import {
-  deleteIconClasses,
-  playIconClasses,
-  pauseIconClasses,
-} from './styles/computed-classes';
+import { deleteIconClasses } from './styles/computed-classes';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import { deleteAudioMeta } from '../../store/audioMeta/actions';
 import { setActiveAudio } from '../../store/activeAudio/actions';
@@ -71,13 +63,6 @@ class AudioTrack extends React.Component<Props, State> {
     this.audio = new Audio(props.src);
   }
 
-  private isActiveAudio = (uuid: string): boolean => {
-    if (!this.props.activeAudio) {
-      return true;
-    }
-    return this.props.activeAudio.id === uuid;
-  };
-
   private playAudio = () => {
     const id = this.props.uuid;
     const event = Events.PLAY;
@@ -106,6 +91,13 @@ class AudioTrack extends React.Component<Props, State> {
     const id = this.props.uuid;
     const event = Events.PAUSE;
     this.props.setActiveAudio({ id, event });
+  };
+
+  private isActiveAudio = (uuid: string): boolean => {
+    if (!this.props.activeAudio) {
+      return true;
+    }
+    return this.props.activeAudio.id === uuid;
   };
 
   private deleteAudioTrack = () => {
@@ -181,24 +173,13 @@ class AudioTrack extends React.Component<Props, State> {
                 {this.props.album}
               </Typography>
             </CardContent>
-            <div className={classes.controls}>
-              <IconButton aria-label="Previous">
-                <SkipPreviousIcon onClick={() => this.skipPrev()} />
-              </IconButton>
-              <IconButton aria-label="Play/pause">
-                <PlayArrowIcon
-                  onClick={() => this.playAudio()}
-                  className={playIconClasses(classes, !this.audio.paused)}
-                />
-                <Pause
-                  onClick={() => this.pauseAudio()}
-                  className={pauseIconClasses(classes, this.audio.paused)}
-                />
-              </IconButton>
-              <IconButton aria-label="Next">
-                <SkipNextIcon onClick={() => this.skipNext()} />
-              </IconButton>
-            </div>
+            <PlayerControls
+              isPlaying={this.audio.paused}
+              onPlay={this.playAudio}
+              onPause={this.pauseAudio}
+              onSkipNext={this.skipNext}
+              onSkipPrev={this.skipPrev}
+            />
           </div>
           <CardMedia className={classes.cover} image={this.props.image} />
           <div className={deleteIconClasses(classes, this.state.isHovered)}>

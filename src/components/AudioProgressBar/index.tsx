@@ -1,7 +1,10 @@
 import * as React from 'react';
 import { styles } from './styles/styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
-import { foregroundBarClasses, backgroundBarClasses } from './styles/classes';
+import {
+  foregroundBarClasses,
+  backgroundBarClasses,
+} from './styles/computed-classes';
 
 interface IncomingProps {
   className: any;
