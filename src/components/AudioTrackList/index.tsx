@@ -1,27 +1,18 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import AudioTrack from '../AudioTrack';
 import { AudioMetaTag } from '../AudioFileDrop/get-metadata/get-metadata';
-import { deleteAudioMeta } from '../../store/audio/actions';
 
 interface PropsFromState {
   audioMeta: AudioMetaTag[];
 }
 
-interface PropsFromDispatch {
-  deleteAudioMeta: Function;
-}
-
-type Props = PropsFromState & PropsFromDispatch;
+type Props = PropsFromState;
 type State = {};
 
 class AudioTrackList extends React.Component<Props, State> {
-  private deleteAudioTrack = (uuid: string) => {
-    this.props.deleteAudioMeta(uuid);
-  };
-
   render() {
+    const audioTrackIds = this.props.audioMeta.map(meta => meta.id);
     const audioTracks = this.props.audioMeta.map(meta => (
       <AudioTrack
         uuid={meta.id}
@@ -31,7 +22,7 @@ class AudioTrackList extends React.Component<Props, State> {
         album={meta.album}
         image={meta.imageDataUrl}
         src={meta.src}
-        delete={this.deleteAudioTrack}
+        audioTrackIds={audioTrackIds}
       />
     ));
     return <div>{audioTracks}</div>;
@@ -39,10 +30,4 @@ class AudioTrackList extends React.Component<Props, State> {
 }
 
 const mapStateToProps = ({ audioMeta }) => ({ audioMeta });
-const mapDispatchToProps = dispatch =>
-  bindActionCreators({ deleteAudioMeta }, dispatch);
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(AudioTrackList);
+export default connect(mapStateToProps)(AudioTrackList);

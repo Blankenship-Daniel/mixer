@@ -7,7 +7,7 @@ import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import classNames from 'classnames';
 import { AudioMetaTag, getMetadata } from './get-metadata/get-metadata';
 import { sanitizeFiles } from './sanitize-files';
-import { setAudioMeta } from '../../store/audio/actions';
+import { setAudioMeta } from '../../store/audioMeta/actions';
 
 const initialState = {
   isHovered: false,

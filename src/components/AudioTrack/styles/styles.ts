@@ -14,11 +14,14 @@ export const styles = (theme: Theme) =>
       position: 'absolute',
       top: theme.spacing.unit,
       right: theme.spacing.unit,
-      color: theme.palette.secondary.dark,
-      cursor: 'pointer',
+      color: theme.palette.error.dark,
       '&:hover': {
-        color: theme.palette.secondary.light,
+        color: theme.palette.error.light,
       },
+      cursor: 'pointer',
+      borderRadius: '50%',
+      background: theme.palette.common.white,
+      padding: theme.spacing.unit,
     },
     details: {
       display: 'flex',
@@ -40,7 +43,17 @@ export const styles = (theme: Theme) =>
       height: 38,
       width: 38,
     },
+    show: {
+      display: 'block',
+    },
     hide: {
       display: 'none',
+    },
+    progressBar: {
+      width: '100%',
+      height: theme.spacing.unit / 2,
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
     },
   });
