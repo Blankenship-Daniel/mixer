@@ -10,14 +10,26 @@ export const styles = (theme: Theme) =>
       justifyContent: 'space-between',
     },
     deleteIcon: {
-      display: 'none',
-      position: 'absolute',
       top: theme.spacing.unit,
       right: theme.spacing.unit,
-      color: theme.palette.error.dark,
+      color: theme.palette.grey[800],
       '&:hover': {
-        color: theme.palette.error.light,
+        color: theme.palette.error.contrastText,
+        background: theme.palette.error.dark,
       },
+    },
+    editIcon: {
+      bottom: theme.spacing.unit,
+      right: theme.spacing.unit,
+      color: theme.palette.grey[800],
+      '&:hover': {
+        color: theme.palette.primary.contrastText,
+        background: theme.palette.primary.dark,
+      },
+    },
+    icon: {
+      display: 'none',
+      position: 'absolute',
       cursor: 'pointer',
       borderRadius: '50%',
       background: theme.palette.common.white,
@@ -38,9 +50,14 @@ export const styles = (theme: Theme) =>
     },
     progressBar: {
       width: '100%',
-      height: theme.spacing.unit / 2,
+      height: theme.spacing.unit / 1.5,
       position: 'absolute',
       bottom: 0,
       left: 0,
+    },
+    range: {
+      height: theme.spacing.unit,
+      marginTop: theme.spacing.unit,
+      marginBottom: theme.spacing.unit,
     },
   });

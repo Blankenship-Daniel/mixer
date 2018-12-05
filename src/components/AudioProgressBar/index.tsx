@@ -8,9 +8,10 @@ import {
 
 interface IncomingProps {
   className: any;
+  isEditMode: boolean;
   max: number;
   value: number;
-  seek: Function;
+  onSeek: Function;
 }
 
 type Props = WithStyles<typeof styles> & IncomingProps;
@@ -18,19 +19,21 @@ type State = {};
 
 class AudioProgressBar extends React.Component<Props, State> {
   private seek = e => {
-    this.props.seek((e.clientX / e.target.offsetWidth) * this.props.max);
+    this.props.onSeek(
+      (e.clientX / e.target.parentElement.offsetWidth) * this.props.max,
+    );
   };
 
   render() {
-    const { classes, value, max } = this.props;
+    const { classes, value, max, isEditMode } = this.props;
     const progress = (value / max) * 100;
     return (
       <div onClick={e => this.seek(e)} className={this.props.className}>
         <div className={classes.progressBar}>
-          <div className={backgroundBarClasses(classes)} />
+          <div className={backgroundBarClasses(classes, isEditMode)} />
           <div
             style={{ width: `${progress}%` }}
-            className={foregroundBarClasses(classes)}
+            className={foregroundBarClasses(classes, isEditMode)}
           />
         </div>
       </div>

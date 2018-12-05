@@ -16,4 +16,7 @@ export const styles = (theme: Theme) =>
     hide: {
       display: 'none',
     },
+    disabled: {
+      color: theme.palette.grey[200],
+    },
   });

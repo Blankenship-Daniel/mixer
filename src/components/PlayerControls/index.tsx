@@ -9,6 +9,7 @@ import SkipNextIcon from '@material-ui/icons/SkipNext';
 import { playIconClasses, pauseIconClasses } from './styles/computed-classes';
 
 interface IncomingProps {
+  isActive: boolean;
   isPlaying: boolean;
   onPlay: Function;
   onPause: Function;
@@ -18,14 +19,22 @@ interface IncomingProps {
 
 type Props = WithStyles<typeof styles> & IncomingProps;
 type State = {};
+type IconColorType = 'action' | 'disabled';
 
 class PlayerControls extends React.Component<Props, State> {
+  private iconColor = (isActive: boolean): IconColorType => {
+    return isActive ? 'action' : 'disabled';
+  };
+
   render() {
-    const { classes, isPlaying } = this.props;
+    const { classes, isActive, isPlaying } = this.props;
     return (
       <div className={classes.controls}>
         <IconButton aria-label="Previous">
-          <SkipPreviousIcon onClick={() => this.props.onSkipPrev()} />
+          <SkipPreviousIcon
+            color={this.iconColor(isActive)}
+            onClick={() => this.props.onSkipPrev()}
+          />
         </IconButton>
         <IconButton aria-label="Play/pause">
           <PlayArrowIcon
@@ -38,7 +47,10 @@ class PlayerControls extends React.Component<Props, State> {
           />
         </IconButton>
         <IconButton aria-label="Next">
-          <SkipNextIcon onClick={() => this.props.onSkipNext()} />
+          <SkipNextIcon
+            color={this.iconColor(isActive)}
+            onClick={() => this.props.onSkipNext()}
+          />
         </IconButton>
       </div>
     );

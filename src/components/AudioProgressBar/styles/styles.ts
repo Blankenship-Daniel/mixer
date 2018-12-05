@@ -7,10 +7,11 @@ export const styles = (theme: Theme) =>
       display: 'block',
       position: 'relative',
       width: '100%',
+      cursor: 'pointer',
     },
     bar: {
       width: '100%',
-      height: theme.spacing.unit / 2,
+      height: theme.spacing.unit / 1.5,
       position: 'absolute',
       top: 0,
       left: 0,
@@ -21,5 +22,11 @@ export const styles = (theme: Theme) =>
     },
     background: {
       background: theme.palette.primary.light,
+    },
+    foregroundEditMode: {
+      background: theme.palette.secondary.dark,
+    },
+    backgroundEditMode: {
+      background: theme.palette.secondary.light,
     },
   });

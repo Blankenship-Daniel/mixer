@@ -6,10 +6,11 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import Edit from '@material-ui/icons/Edit';
 import AudioProgressBar from '../AudioProgressBar';
 import PlayerControls from '../PlayerControls';
 import { styles } from './styles/styles';
-import { deleteIconClasses } from './styles/computed-classes';
+import { deleteIconClasses, editIconClasses } from './styles/computed-classes';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import { deleteAudioMeta } from '../../store/audioMeta/actions';
 import { setActiveAudio } from '../../store/activeAudio/actions';
@@ -24,6 +25,7 @@ const initialState = {
   src: '',
   isHovered: false,
   isPlaying: false,
+  isEditMode: false,
   currentTime: 0,
   duration: 0,
 };
@@ -129,6 +131,12 @@ class AudioTrack extends React.Component<Props, State> {
     this.audio.currentTime = seekedTime;
   };
 
+  private toggleEditMode = () => {
+    this.setState({
+      isEditMode: !this.state.isEditMode,
+    });
+  };
+
   public onMouseEnterEvent = e => {
     this.setState({ isHovered: true });
   };
@@ -142,10 +150,10 @@ class AudioTrack extends React.Component<Props, State> {
       this.skipNext();
     });
     this.audio.addEventListener(HTML5AudioEvents.LOADED_METADATA, () => {
-      this.setState({ duration: Math.floor(this.audio.duration) });
+      this.setState({ duration: this.audio.duration });
     });
     this.audio.addEventListener(HTML5AudioEvents.TIME_UPDATE, () => {
-      this.setState({ currentTime: Math.floor(this.audio.currentTime) });
+      this.setState({ currentTime: this.audio.currentTime });
     });
   }
 
@@ -174,6 +182,7 @@ class AudioTrack extends React.Component<Props, State> {
               </Typography>
             </CardContent>
             <PlayerControls
+              isActive={this.isActiveAudio(this.props.uuid)}
               isPlaying={this.audio.paused}
               onPlay={this.playAudio}
               onPause={this.pauseAudio}
@@ -185,11 +194,15 @@ class AudioTrack extends React.Component<Props, State> {
           <div className={deleteIconClasses(classes, this.state.isHovered)}>
             <DeleteForeverIcon onClick={() => this.deleteAudioTrack()} />
           </div>
+          <div className={editIconClasses(classes, this.state.isHovered)}>
+            <Edit onClick={() => this.toggleEditMode()} />
+          </div>
           <AudioProgressBar
             className={classes.progressBar}
+            isEditMode={this.state.isEditMode}
             value={this.state.currentTime}
             max={this.state.duration}
-            seek={this.seekAudio}
+            onSeek={this.seekAudio}
           />
         </Card>
       </div>
