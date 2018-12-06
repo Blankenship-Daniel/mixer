@@ -6,11 +6,10 @@ import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Typography from '@material-ui/core/Typography';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-import Edit from '@material-ui/icons/Edit';
 import AudioProgressBar from '../AudioProgressBar';
 import PlayerControls from '../PlayerControls';
 import { styles } from './styles/styles';
-import { deleteIconClasses, editIconClasses } from './styles/computed-classes';
+import { deleteIconClasses } from './styles/computed-classes';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import { deleteAudioMeta } from '../../store/audioMeta/actions';
 import { setActiveAudio } from '../../store/activeAudio/actions';
@@ -28,6 +27,7 @@ const initialState = {
   isEditMode: false,
   currentTime: 0,
   duration: 0,
+  leftBound: 0,
 };
 
 interface PropsFromDispatch {
@@ -71,6 +71,12 @@ class AudioTrack extends React.Component<Props, State> {
     this.props.setActiveAudio({ id, event });
   };
 
+  private pauseAudio = () => {
+    const id = this.props.uuid;
+    const event = Events.PAUSE;
+    this.props.setActiveAudio({ id, event });
+  };
+
   private skipPrev = () => {
     if (!this.isActiveAudio(this.props.uuid)) {
       return;
@@ -86,12 +92,6 @@ class AudioTrack extends React.Component<Props, State> {
     }
     const id = getNextTrack(this.props.uuid, this.props.audioTrackIds);
     const event = Events.PLAY;
-    this.props.setActiveAudio({ id, event });
-  };
-
-  private pauseAudio = () => {
-    const id = this.props.uuid;
-    const event = Events.PAUSE;
     this.props.setActiveAudio({ id, event });
   };
 
@@ -131,6 +131,15 @@ class AudioTrack extends React.Component<Props, State> {
     this.audio.currentTime = seekedTime;
   };
 
+  private leftBoundaryChange = (leftBound: number) => {
+    console.log('leftBoundaryChange', leftBound);
+    this.setState({ leftBound });
+  };
+
+  private rightBoundaryChange = (rightBound: number) => {
+    console.log('rightBoundaryChange', rightBound);
+  };
+
   public onMouseEnterEvent = e => {
     this.setState({ isHovered: true });
   };
@@ -147,7 +156,13 @@ class AudioTrack extends React.Component<Props, State> {
       this.setState({ duration: this.audio.duration });
     });
     this.audio.addEventListener(HTML5AudioEvents.TIME_UPDATE, () => {
-      this.setState({ currentTime: this.audio.currentTime });
+      if (this.state.currentTime < this.state.leftBound) {
+        this.pauseAudio();
+        this.audio.currentTime = this.state.leftBound + 1;
+        this.setState({ currentTime: this.state.leftBound });
+      } else {
+        this.setState({ currentTime: this.audio.currentTime });
+      }
     });
   }
 
@@ -194,6 +209,8 @@ class AudioTrack extends React.Component<Props, State> {
           value={this.state.currentTime}
           max={this.state.duration}
           onSeek={this.seekAudio}
+          onLeftBoundaryChange={this.leftBoundaryChange}
+          onRightBoundaryChange={this.rightBoundaryChange}
         />
       </div>
     );

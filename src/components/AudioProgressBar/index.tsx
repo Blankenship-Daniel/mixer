@@ -8,6 +8,7 @@ import {
   rightHandleClasses,
 } from './styles/computed-classes';
 import { Slider } from './sliders';
+import { getLeftX, getRightX } from './handle-movement';
 
 const initialState = {
   leftHandlePos: 0,
@@ -20,6 +21,8 @@ interface IncomingProps {
   max: number;
   value: number;
   onSeek: Function;
+  onLeftBoundaryChange: Function;
+  onRightBoundaryChange: Function;
 }
 
 type Props = WithStyles<typeof styles> & IncomingProps;
@@ -43,50 +46,14 @@ class AudioProgressBar extends React.Component<Props, State> {
   };
 
   private onPointerLeftMoveEvent = e => {
-    e.preventDefault();
-    e.stopPropagation();
     if (this.state.pointerDownLeft) {
-      const el = e.target;
-      const clientRect: DOMRect = el.parentElement.getBoundingClientRect();
-      const leftBoundary: number = 0;
-      const rightBoundary: number = clientRect.width - el.offsetWidth;
-      const x: number = e.clientX - el.offsetWidth;
-      const rightX: number =
-        rightBoundary - this.state.rightHandlePos - el.offsetWidth * 2;
-
-      if (x > rightX) {
-        this.setState({ leftHandlePos: rightX });
-      } else if (x < leftBoundary) {
-        this.setState({ leftHandlePos: leftBoundary });
-      } else if (x > rightBoundary) {
-        this.setState({ leftHandlePos: rightBoundary });
-      } else {
-        this.setState({ leftHandlePos: x });
-      }
+      this.setState({ leftHandlePos: getLeftX(e, this.state.rightHandlePos) });
     }
   };
 
   private onPointerRightMoveEvent = e => {
-    e.preventDefault();
-    e.stopPropagation();
     if (this.state.pointerDownRight) {
-      const el = e.target;
-      const clientRect: DOMRect = el.parentElement.getBoundingClientRect();
-      const leftBoundary: number = 0;
-      const rightBoundary: number = clientRect.width - el.offsetWidth;
-      const x: number = e.clientX - el.offsetWidth;
-      const rightX: number = rightBoundary - x;
-      const leftX: number = this.state.leftHandlePos + el.offsetWidth * 2;
-
-      if (x < leftX) {
-        this.setState({ rightHandlePos: rightBoundary - leftX });
-      } else if (x < leftBoundary) {
-        this.setState({ rightHandlePos: rightBoundary });
-      } else if (x > rightBoundary) {
-        this.setState({ rightHandlePos: leftBoundary });
-      } else {
-        this.setState({ rightHandlePos: rightX });
-      }
+      this.setState({ rightHandlePos: getRightX(e, this.state.leftHandlePos) });
     }
   };
 
@@ -114,9 +81,14 @@ class AudioProgressBar extends React.Component<Props, State> {
               this.onPointerDownEvent(e);
             }}
             onPointerMove={e => this.onPointerLeftMoveEvent(e)}
-            onPointerUp={e => {
+            onPointerUp={(e: any) => {
               this.setState({ pointerDownLeft: false });
               this.onPointerUpEvent(e);
+              const leftBoundTime: number =
+                (this.state.leftHandlePos /
+                  e.target.parentElement.offsetWidth) *
+                this.props.max;
+              this.props.onLeftBoundaryChange(leftBoundTime);
             }}
             data-slider={Slider.LEFT_HANDLE}
             style={{ left: this.state.leftHandlePos }}
@@ -128,9 +100,14 @@ class AudioProgressBar extends React.Component<Props, State> {
               this.onPointerDownEvent(e);
             }}
             onPointerMove={e => this.onPointerRightMoveEvent(e)}
-            onPointerUp={e => {
+            onPointerUp={(e: any) => {
               this.setState({ pointerDownRight: false });
               this.onPointerUpEvent(e);
+              const parentElWidth: number = e.target.parentElement.offsetWidth;
+              const rightBoundTime: number =
+                ((parentElWidth - this.state.rightHandlePos) / parentElWidth) *
+                this.props.max;
+              this.props.onRightBoundaryChange(rightBoundTime);
             }}
             data-slider={Slider.RIGHT_HANDLE}
             style={{ right: this.state.rightHandlePos }}
