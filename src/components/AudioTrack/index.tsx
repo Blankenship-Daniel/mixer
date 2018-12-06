@@ -131,12 +131,6 @@ class AudioTrack extends React.Component<Props, State> {
     this.audio.currentTime = seekedTime;
   };
 
-  private toggleEditMode = () => {
-    this.setState({
-      isEditMode: !this.state.isEditMode,
-    });
-  };
-
   public onMouseEnterEvent = e => {
     this.setState({ isHovered: true });
   };
@@ -163,10 +157,10 @@ class AudioTrack extends React.Component<Props, State> {
 
     return (
       <div
+        className={classes.container}
         onMouseOver={this.onMouseEnterEvent}
         onMouseEnter={this.onMouseEnterEvent}
         onMouseLeave={this.onMouseLeaveEvent}
-        draggable
       >
         <Card className={classes.card}>
           <div className={classes.details}>
@@ -194,17 +188,13 @@ class AudioTrack extends React.Component<Props, State> {
           <div className={deleteIconClasses(classes, this.state.isHovered)}>
             <DeleteForeverIcon onClick={() => this.deleteAudioTrack()} />
           </div>
-          <div className={editIconClasses(classes, this.state.isHovered)}>
-            <Edit onClick={() => this.toggleEditMode()} />
-          </div>
-          <AudioProgressBar
-            className={classes.progressBar}
-            isEditMode={this.state.isEditMode}
-            value={this.state.currentTime}
-            max={this.state.duration}
-            onSeek={this.seekAudio}
-          />
         </Card>
+
+        <AudioProgressBar
+          value={this.state.currentTime}
+          max={this.state.duration}
+          onSeek={this.seekAudio}
+        />
       </div>
     );
   }

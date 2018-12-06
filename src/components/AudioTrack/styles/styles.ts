@@ -3,10 +3,12 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 
 export const styles = (theme: Theme) =>
   createStyles({
+    container: {
+      margin: theme.spacing.unit,
+    },
     card: {
       position: 'relative',
       display: 'flex',
-      margin: theme.spacing.unit,
       justifyContent: 'space-between',
     },
     deleteIcon: {
@@ -47,17 +49,5 @@ export const styles = (theme: Theme) =>
     },
     show: {
       display: 'block',
-    },
-    progressBar: {
-      width: '100%',
-      height: theme.spacing.unit / 1.5,
-      position: 'absolute',
-      bottom: 0,
-      left: 0,
-    },
-    range: {
-      height: theme.spacing.unit,
-      marginTop: theme.spacing.unit,
-      marginBottom: theme.spacing.unit,
     },
   });
