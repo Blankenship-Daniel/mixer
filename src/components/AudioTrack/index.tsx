@@ -11,7 +11,7 @@ import PlayerControls from '../PlayerControls';
 import { styles } from './styles/styles';
 import { deleteIconClasses } from './styles/computed-classes';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
-import { deleteAudioMeta } from '../../store/audioMeta/actions';
+import { deleteAudioMeta, editAudioMeta } from '../../store/audioMeta/actions';
 import { setActiveAudio } from '../../store/activeAudio/actions';
 import {
   getPrevTrack,
@@ -28,10 +28,15 @@ const initialState = {
   currentTime: 0,
   duration: 0,
   leftBound: 0,
+
+  // We won't know this value until the user moves the right handle,
+  //  so we just set it arbitrarily high to begin with
+  rightBound: Infinity,
 };
 
 interface PropsFromDispatch {
   deleteAudioMeta: Function;
+  editAudioMeta: Function;
   setActiveAudio: Function;
 }
 
@@ -59,41 +64,14 @@ class AudioTrack extends React.Component<Props, State> {
   readonly state: State = initialState;
 
   private audio: HTMLAudioElement;
+  private onEndedListener: EventListener;
+  private onTimeUpdateListener: EventListener;
+  private onLoadedMetaDataListener: EventListener;
 
   constructor(props: Props) {
     super(props);
     this.audio = new Audio(props.src);
   }
-
-  private playAudio = () => {
-    const id = this.props.uuid;
-    const event = Events.PLAY;
-    this.props.setActiveAudio({ id, event });
-  };
-
-  private pauseAudio = () => {
-    const id = this.props.uuid;
-    const event = Events.PAUSE;
-    this.props.setActiveAudio({ id, event });
-  };
-
-  private skipPrev = () => {
-    if (!this.isActiveAudio(this.props.uuid)) {
-      return;
-    }
-    const id = getPrevTrack(this.props.uuid, this.props.audioTrackIds);
-    const event = Events.PLAY;
-    this.props.setActiveAudio({ id, event });
-  };
-
-  private skipNext = () => {
-    if (!this.isActiveAudio(this.props.uuid)) {
-      return;
-    }
-    const id = getNextTrack(this.props.uuid, this.props.audioTrackIds);
-    const event = Events.PLAY;
-    this.props.setActiveAudio({ id, event });
-  };
 
   private isActiveAudio = (uuid: string): boolean => {
     if (!this.props.activeAudio) {
@@ -114,56 +92,137 @@ class AudioTrack extends React.Component<Props, State> {
       return;
     }
 
-    const event = this.props.activeAudio.event;
+    const event: string = this.props.activeAudio.event;
     switch (event) {
       case Events.PLAY:
-        this.audio.play();
-        break;
+        return this.audio.play();
       case Events.PAUSE:
-        this.audio.pause();
-        break;
-      default:
-        break;
+        return this.audio.pause();
     }
   };
 
-  private seekAudio = (seekedTime: number) => {
-    this.audio.currentTime = seekedTime;
-  };
-
-  private leftBoundaryChange = (leftBound: number) => {
-    console.log('leftBoundaryChange', leftBound);
-    this.setState({ leftBound });
-  };
-
-  private rightBoundaryChange = (rightBound: number) => {
-    console.log('rightBoundaryChange', rightBound);
-  };
-
-  public onMouseEnterEvent = e => {
+  private onMouseEnterEvent = e => {
     this.setState({ isHovered: true });
   };
 
-  public onMouseLeaveEvent = e => {
+  private onMouseLeaveEvent = e => {
     this.setState({ isHovered: false });
   };
 
+  //////////////////////////////
+  // AUDIO PROGRESS BAR EVENTS
+  //////////////////////////////
+
+  private onLeftBoundaryChange = (leftBound: number) => {
+    this.setState({ leftBound });
+    this.props.editAudioMeta({
+      uuid: this.props.uuid,
+      startTime: leftBound,
+      endTime: this.state.rightBound,
+    });
+  };
+
+  private onRightBoundaryChange = (rightBound: number) => {
+    this.setState({ rightBound });
+    this.props.editAudioMeta({
+      uuid: this.props.uuid,
+      startTime: this.state.leftBound,
+      endTime: rightBound,
+    });
+  };
+
+  private onSeekAudio = (seekedTime: number) => {
+    this.audio.currentTime = seekedTime;
+  };
+
+  //////////////////////////////
+  // PLAYER CONTROLS EVENTS
+  //////////////////////////////
+
+  private onPauseAudio = () => {
+    const id = this.props.uuid;
+    const event = Events.PAUSE;
+    this.props.setActiveAudio({ id, event });
+  };
+
+  private onPlayAudio = () => {
+    const id = this.props.uuid;
+    const event = Events.PLAY;
+    this.props.setActiveAudio({ id, event });
+  };
+
+  private onSkipNext = () => {
+    if (!this.isActiveAudio(this.props.uuid)) {
+      return;
+    }
+    const id = getNextTrack(this.props.uuid, this.props.audioTrackIds);
+    const event = Events.PLAY;
+    this.props.setActiveAudio({ id, event });
+  };
+
+  private onSkipPrev = () => {
+    if (!this.isActiveAudio(this.props.uuid)) {
+      return;
+    }
+    const id = getPrevTrack(this.props.uuid, this.props.audioTrackIds);
+    const event = Events.PLAY;
+    this.props.setActiveAudio({ id, event });
+  };
+
+  //////////////////////////////
+  // HTML5 AUDIO EVENTS
+  //////////////////////////////
+
+  private onEnded = () => {
+    this.onSkipNext();
+  };
+
+  private onLoadedMetaData = () => {
+    this.setState({ duration: this.audio.duration });
+  };
+
+  private onTimeUpdate = () => {
+    if (
+      this.state.currentTime < this.state.leftBound ||
+      this.state.currentTime > this.state.rightBound
+    ) {
+      this.onPauseAudio();
+      this.audio.currentTime = this.state.leftBound + 1;
+      this.setState({ currentTime: this.state.leftBound });
+    } else {
+      this.setState({ currentTime: this.audio.currentTime });
+    }
+  };
+
   componentDidMount() {
-    this.audio.addEventListener(HTML5AudioEvents.ENDED, () => {
-      this.skipNext();
-    });
-    this.audio.addEventListener(HTML5AudioEvents.LOADED_METADATA, () => {
-      this.setState({ duration: this.audio.duration });
-    });
-    this.audio.addEventListener(HTML5AudioEvents.TIME_UPDATE, () => {
-      if (this.state.currentTime < this.state.leftBound) {
-        this.pauseAudio();
-        this.audio.currentTime = this.state.leftBound + 1;
-        this.setState({ currentTime: this.state.leftBound });
-      } else {
-        this.setState({ currentTime: this.audio.currentTime });
-      }
-    });
+    this.onEndedListener = this.onEnded.bind(this);
+    this.onTimeUpdateListener = this.onTimeUpdate.bind(this);
+    this.onLoadedMetaDataListener = this.onLoadedMetaData.bind(this);
+
+    this.audio.addEventListener(HTML5AudioEvents.ENDED, this.onEndedListener);
+    this.audio.addEventListener(
+      HTML5AudioEvents.LOADED_METADATA,
+      this.onLoadedMetaDataListener,
+    );
+    this.audio.addEventListener(
+      HTML5AudioEvents.TIME_UPDATE,
+      this.onTimeUpdateListener,
+    );
+  }
+
+  componentWillUnmount() {
+    this.audio.removeEventListener(
+      HTML5AudioEvents.ENDED,
+      this.onEndedListener,
+    );
+    this.audio.removeEventListener(
+      HTML5AudioEvents.LOADED_METADATA,
+      this.onLoadedMetaDataListener,
+    );
+    this.audio.removeEventListener(
+      HTML5AudioEvents.TIME_UPDATE,
+      this.onTimeUpdateListener,
+    );
   }
 
   render() {
@@ -193,10 +252,10 @@ class AudioTrack extends React.Component<Props, State> {
             <PlayerControls
               isActive={this.isActiveAudio(this.props.uuid)}
               isPlaying={this.audio.paused}
-              onPlay={this.playAudio}
-              onPause={this.pauseAudio}
-              onSkipNext={this.skipNext}
-              onSkipPrev={this.skipPrev}
+              onPlay={this.onPlayAudio}
+              onPause={this.onPauseAudio}
+              onSkipNext={this.onSkipNext}
+              onSkipPrev={this.onSkipPrev}
             />
           </div>
           <CardMedia className={classes.cover} image={this.props.image} />
@@ -208,9 +267,9 @@ class AudioTrack extends React.Component<Props, State> {
         <AudioProgressBar
           value={this.state.currentTime}
           max={this.state.duration}
-          onSeek={this.seekAudio}
-          onLeftBoundaryChange={this.leftBoundaryChange}
-          onRightBoundaryChange={this.rightBoundaryChange}
+          onSeek={this.onSeekAudio}
+          onLeftBoundaryChange={this.onLeftBoundaryChange}
+          onRightBoundaryChange={this.onRightBoundaryChange}
         />
       </div>
     );
@@ -219,7 +278,10 @@ class AudioTrack extends React.Component<Props, State> {
 
 const mapStateToProps = ({ activeAudio }) => ({ activeAudio });
 const mapDispatchToProps = dispatch =>
-  bindActionCreators({ deleteAudioMeta, setActiveAudio }, dispatch);
+  bindActionCreators(
+    { deleteAudioMeta, editAudioMeta, setActiveAudio },
+    dispatch,
+  );
 const connectedComponent = connect(
   mapStateToProps,
   mapDispatchToProps,
