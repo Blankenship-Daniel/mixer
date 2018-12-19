@@ -117,8 +117,8 @@ class AudioTrack extends React.Component<Props, State> {
     this.setState({ leftBound });
     this.props.editAudioMeta({
       uuid: this.props.uuid,
-      startTime: leftBound,
-      endTime: this.state.rightBound,
+      customStartTime: leftBound,
+      customEndTime: this.state.rightBound,
     });
   };
 
@@ -126,8 +126,8 @@ class AudioTrack extends React.Component<Props, State> {
     this.setState({ rightBound });
     this.props.editAudioMeta({
       uuid: this.props.uuid,
-      startTime: this.state.leftBound,
-      endTime: rightBound,
+      customStartTime: this.state.leftBound,
+      customEndTime: rightBound,
     });
   };
 

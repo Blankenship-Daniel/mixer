@@ -4,7 +4,7 @@ import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import { styles } from './styles';
 import Typography from '@material-ui/core/Typography';
 import { supportedFileTypes } from '../AudioFileDrop/sanitize-files/supported-file-types';
-import { AudioMetaTag } from '../AudioFileDrop/get-metadata/get-metadata';
+import { AudioMetaTag } from '../AudioFileDrop/metadata';
 
 interface PropsFromState {
   audioMeta: AudioMetaTag[];

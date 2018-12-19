@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import AudioTrack from '../AudioTrack';
-import { AudioMetaTag } from '../AudioFileDrop/get-metadata/get-metadata';
+import { AudioMetaTag } from '../AudioFileDrop/metadata';
+import SubmitAudioButton from '../SubmitAudioButton';
 
 interface PropsFromState {
   audioMeta: AudioMetaTag[];
@@ -25,7 +26,16 @@ class AudioTrackList extends React.Component<Props, State> {
         audioTrackIds={audioTrackIds}
       />
     ));
-    return <div>{audioTracks}</div>;
+    return (
+      <div>
+        {audioTracks.length ? (
+          <div>
+            {audioTracks}
+            <SubmitAudioButton />
+          </div>
+        ) : null}
+      </div>
+    );
   }
 }
 

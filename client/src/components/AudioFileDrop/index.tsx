@@ -1,13 +1,13 @@
 import * as React from 'react';
-import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { styles } from './styles';
+import { styles } from './styles/styles';
+import { dragAndDropClasses } from './styles/computed-classes';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
-import classNames from 'classnames';
-import { AudioMetaTag, getMetadata } from './get-metadata/get-metadata';
+import { AudioMetaTag, CustomFile, MetaData } from './metadata';
 import { sanitizeFiles } from './sanitize-files';
 import { setAudioMeta } from '../../store/audioMeta/actions';
+import { uploadFiles } from './upload-files';
 
 const initialState = {
   isHovered: false,
@@ -28,20 +28,13 @@ type State = Readonly<typeof initialState>;
 class AudioFileDrop extends React.Component<Props, State> {
   readonly state: State = initialState;
 
-  private dragAndDropClasses = (classes): string => {
-    return classNames(classes.audioFileDropContainer, {
-      [classes.hover]: this.state.isHovered,
-      [classes.hide]: this.state.isHidden,
-    });
-  };
-
   private onDrop = async e => {
     this.setState({ isHidden: true, isHovered: false });
-    const files: File[] = Array.from(e.dataTransfer.files);
-    const audioMeta: AudioMetaTag[] = await compose(
-      getMetadata,
-      sanitizeFiles,
-    )(files);
+    const fileList: FileList = e.dataTransfer.files;
+    const files: CustomFile[] = Array.from(fileList) as CustomFile[];
+    const metaData: MetaData = new MetaData(sanitizeFiles(files));
+    const audioMeta: AudioMetaTag[] = await metaData.getMetaData();
+    uploadFiles(metaData.getFiles());
     this.props.setAudioMeta(audioMeta);
   };
 
@@ -85,7 +78,11 @@ class AudioFileDrop extends React.Component<Props, State> {
     const { classes } = this.props;
     return (
       <div
-        className={this.dragAndDropClasses(classes)}
+        className={dragAndDropClasses(
+          classes,
+          this.state.isHovered,
+          this.state.isHidden,
+        )}
         onDrop={this.onDropEvent}
         onDragEnter={this.onDragEnterEvent}
         onDragLeave={this.onDragLeaveEvent}

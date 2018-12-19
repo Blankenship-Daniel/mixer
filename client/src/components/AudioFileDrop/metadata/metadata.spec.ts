@@ -1,6 +1,8 @@
 import * as uuid from 'uuid';
 import * as parse from 'id3-parser/lib/universal';
-import { AudioMetaTag, getMetadata } from './get-metadata';
+import { AudioMetaTag } from './audio-meta-tag';
+import { CustomFile } from './custom-file';
+import { MetaData } from './metadata';
 
 describe('getMetadata', () => {
   beforeEach(() => {
@@ -12,8 +14,9 @@ describe('getMetadata', () => {
   });
 
   it('should return AudioMetaTags for a given FileList', async () => {
-    const mockFiles: File[] = [
+    const mockFiles: CustomFile[] = [
       {
+        id: null,
         lastModified: 123,
         name: 'test1',
         size: 123,
@@ -21,6 +24,7 @@ describe('getMetadata', () => {
         type: 'audio/mp3',
       },
       {
+        id: null,
         lastModified: 123,
         name: 'test2',
         size: 123,
@@ -42,7 +46,8 @@ describe('getMetadata', () => {
     jest.spyOn(parse, 'default').mockReturnValue(mockReturnValue);
     jest.spyOn(uuid, 'v1').mockReturnValue(mockId);
 
-    const audioMeta: AudioMetaTag[] = await getMetadata(mockFiles);
+    const metaData: MetaData = new MetaData(mockFiles);
+    const audioMeta: AudioMetaTag[] = await metaData.getMetaData();
     audioMeta.forEach(meta => {
       expect(meta).toHaveProperty('id');
       expect(meta).not.toHaveProperty('image');

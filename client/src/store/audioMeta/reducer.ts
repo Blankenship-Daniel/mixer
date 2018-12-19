@@ -9,8 +9,8 @@ const reducer = (state = [], action) => {
     case AudioTypes.EDIT_AUDIO_META:
       state.forEach(meta => {
         if (meta.id === action.payload.uuid) {
-          meta.startTime = action.payload.startTime;
-          meta.endTime = action.payload.endTime;
+          meta.customStartTime = action.payload.customStartTime;
+          meta.customEndTime = action.payload.customEndTime;
         }
       });
       return state;
