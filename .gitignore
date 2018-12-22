@@ -6,6 +6,8 @@ client/yarn-error.log
 client/settings.js
 
 server/uploads
+server/output
+server/fade
 server/node_modules
 
 # Cruft

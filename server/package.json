@@ -11,8 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.4",
-    "fluent-ffmpeg": "^2.1.2",
     "formidable": "^1.2.1",
+    "sox-audio": "^0.3.0",
     "uuid": "^3.3.2"
   }
 }

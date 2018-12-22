@@ -7,7 +7,8 @@ import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
 import { AudioMetaTag, CustomFile, MetaData } from './metadata';
 import { sanitizeFiles } from './sanitize-files';
 import { setAudioMeta } from '../../store/audioMeta/actions';
-import { uploadFiles } from './upload-files';
+import { uploadFiles } from '../../services/upload-files';
+import { createRequestBody } from './creat-request-body';
 
 const initialState = {
   isHovered: false,
@@ -34,7 +35,7 @@ class AudioFileDrop extends React.Component<Props, State> {
     const files: CustomFile[] = Array.from(fileList) as CustomFile[];
     const metaData: MetaData = new MetaData(sanitizeFiles(files));
     const audioMeta: AudioMetaTag[] = await metaData.getMetaData();
-    uploadFiles(metaData.getFiles());
+    uploadFiles(createRequestBody(metaData.getFiles()));
     this.props.setAudioMeta(audioMeta);
   };
 

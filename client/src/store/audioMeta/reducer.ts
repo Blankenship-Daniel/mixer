@@ -7,13 +7,9 @@ const reducer = (state = [], action) => {
     case AudioTypes.DELETE_AUDIO_META:
       return state.filter(meta => meta.id !== action.payload);
     case AudioTypes.EDIT_AUDIO_META:
-      state.forEach(meta => {
-        if (meta.id === action.payload.uuid) {
-          meta.customStartTime = action.payload.customStartTime;
-          meta.customEndTime = action.payload.customEndTime;
-        }
-      });
-      return state;
+      return state.map(meta =>
+        meta.id === action.payload.id ? { ...meta, ...action.payload } : meta,
+      );
     default:
       return state;
   }

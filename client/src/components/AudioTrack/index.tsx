@@ -116,7 +116,7 @@ class AudioTrack extends React.Component<Props, State> {
   private onLeftBoundaryChange = (leftBound: number) => {
     this.setState({ leftBound });
     this.props.editAudioMeta({
-      uuid: this.props.uuid,
+      id: this.props.uuid,
       customStartTime: leftBound,
       customEndTime: this.state.rightBound,
     });
@@ -125,7 +125,7 @@ class AudioTrack extends React.Component<Props, State> {
   private onRightBoundaryChange = (rightBound: number) => {
     this.setState({ rightBound });
     this.props.editAudioMeta({
-      uuid: this.props.uuid,
+      id: this.props.uuid,
       customStartTime: this.state.leftBound,
       customEndTime: rightBound,
     });
@@ -179,6 +179,10 @@ class AudioTrack extends React.Component<Props, State> {
 
   private onLoadedMetaData = () => {
     this.setState({ duration: this.audio.duration });
+    this.props.editAudioMeta({
+      id: this.props.uuid,
+      duration: this.audio.duration,
+    });
   };
 
   private onTimeUpdate = () => {
