@@ -6,6 +6,8 @@ const app = express();
 const port = 1235;
 const UPLOAD_DIR = `${__dirname}/uploads`;
 const OUTPUT_DIR = `${__dirname}/output`;
+const getStartTime = require('./lib/get-start-time');
+const getEndTime = require('./lib/get-end-time');
 
 // Enable CORS
 app.use(function(req, res, next) {
@@ -50,7 +52,7 @@ app.post('/mix', (req, res, next) => {
       .input(inFile)
       .output('-p')
       .outputFileType('mp3')
-      .trim(meta.customStartTime, meta.customEndTime)
+      .trim(getStartTime(meta), getEndTime(meta))
       .addEffect('fade', ['h', '0:5', '0', '0:5']);
     command.inputSubCommand(subCommand);
   });
