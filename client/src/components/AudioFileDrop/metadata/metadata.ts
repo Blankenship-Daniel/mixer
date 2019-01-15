@@ -1,9 +1,9 @@
 import universalParse from 'id3-parser/lib/universal';
 import * as uuid from 'uuid';
-import { createDataUrl } from '../create-data-url';
 import { noCoverArtDataUrl } from './no-cover-art-data-url';
 import { CustomFile } from './custom-file';
 import { AudioMetaTag } from './audio-meta-tag';
+import { settings } from '../../../../settings';
 
 export class MetaData {
   private files: CustomFile[];
@@ -25,10 +25,8 @@ export class MetaData {
       tag.artist = tag.artist || '';
       tag.album = tag.album || '';
       tag.id = file.id;
-      tag.src = URL.createObjectURL(file);
-      tag.imageDataUrl = tag.image
-        ? createDataUrl(tag.image)
-        : noCoverArtDataUrl;
+      tag.src = `${settings.SERVER_BASE_URL}/${file.id}.mp3`;
+      tag.imageDataUrl = noCoverArtDataUrl;
       tag.customStartTime = null;
       tag.customEndTime = null;
       delete tag.image; // No reason to keep all of this data in memory once we've generated the imageDataUrl

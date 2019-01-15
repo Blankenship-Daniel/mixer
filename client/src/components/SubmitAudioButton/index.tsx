@@ -4,8 +4,7 @@ import { AudioMetaTag } from '../AudioFileDrop/metadata';
 import Button from '@material-ui/core/Button';
 import { styles } from './styles';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
-import { createRequestPayload } from './create-request-payload';
-import { mixAudio } from '../../services/mix-audio';
+import { downloadAudioFile } from './download-audio-file';
 
 interface PropsFromState {
   audioMeta: AudioMetaTag[];
@@ -22,9 +21,7 @@ class SubmitAudioButton extends React.Component<Props, State> {
         className={classes.submitAudioBtn}
         variant={'contained'}
         color="primary"
-        onClick={() => {
-          mixAudio(createRequestPayload(audioMeta));
-        }}
+        onClick={() => downloadAudioFile(audioMeta)}
       >
         Create Mix
       </Button>

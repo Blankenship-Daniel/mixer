@@ -19,6 +19,7 @@ app.use(function(req, res, next) {
   next();
 });
 
+app.use(express.static('uploads'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -46,6 +47,9 @@ app.post('/upload', (req, res) => {
 app.post('/mix', (req, res, next) => {
   const data = req.body;
   const command = SoxCommand();
+  const fileName = `${uuid.v1()}.mp3`;
+  const filePath = `${OUTPUT_DIR}/${fileName}`;
+
   data.forEach(meta => {
     const inFile = `${UPLOAD_DIR}/${meta.id}.mp3`;
     const subCommand = SoxCommand()
@@ -56,8 +60,7 @@ app.post('/mix', (req, res, next) => {
       .addEffect('fade', ['h', '0:5', '0', '0:5']);
     command.inputSubCommand(subCommand);
   });
-  command.output(`${OUTPUT_DIR}/${uuid.v1()}.mp3`).concat();
-
+  command.output(filePath).concat();
   command.on('start', commandLine => {
     console.log('Spawned sox with command: ' + commandLine);
   });
@@ -72,10 +75,16 @@ app.post('/mix', (req, res, next) => {
   });
   command.on('end', () => {
     console.log('Sox command succeeded!');
-    res.send('Success!');
+    const downloadUrl = `/download/${fileName}`;
+    res.send(downloadUrl);
   });
 
   command.run();
+});
+
+app.get('/download/:file(*)', (req, res) => {
+  const file = req.params.file;
+  res.download(`${OUTPUT_DIR}/${file}`);
 });
 
 app.listen(port, () => {
