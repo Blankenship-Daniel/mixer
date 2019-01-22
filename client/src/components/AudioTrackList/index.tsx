@@ -3,6 +3,9 @@ import { connect } from 'react-redux';
 import AudioTrack from '../AudioTrack';
 import { AudioMetaTag } from '../AudioFileDrop/metadata';
 import SubmitAudioButton from '../SubmitAudioButton';
+import AudioFileDrop from '../AudioFileDrop';
+import { AudioFileDropVariants } from '../AudioFileDrop/variants';
+import { lang } from '../../config/lang/en';
 
 interface PropsFromState {
   audioMeta: AudioMetaTag[];
@@ -21,7 +24,7 @@ class AudioTrackList extends React.Component<Props, State> {
         title={meta.title}
         artist={meta.artist}
         album={meta.album}
-        image={meta.imageDataUrl}
+        image={meta.imageSrc}
         src={meta.src}
         audioTrackIds={audioTrackIds}
       />
@@ -31,9 +34,14 @@ class AudioTrackList extends React.Component<Props, State> {
         {audioTracks.length ? (
           <div>
             {audioTracks}
+            <AudioFileDrop variant={AudioFileDropVariants.DRAWER}>
+              {lang.dropZone}
+            </AudioFileDrop>
             <SubmitAudioButton />
           </div>
-        ) : null}
+        ) : (
+          <AudioFileDrop variant={AudioFileDropVariants.FULL_SCREEN} />
+        )}
       </div>
     );
   }

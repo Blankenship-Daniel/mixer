@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { compose } from 'redux';
+import AppWideLoading from '../AppWideLoading';
 import AudioTrackList from '../AudioTrackList';
-import AudioFileDrop from '../AudioFileDrop';
 import SplashScreen from '../SplashScreen';
 import { withRoot } from '../../withRoot';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
@@ -14,7 +14,7 @@ class App extends React.Component<Props, State> {
   render() {
     return (
       <div>
-        <AudioFileDrop />
+        <AppWideLoading />
         <AudioTrackList />
         <SplashScreen />
       </div>

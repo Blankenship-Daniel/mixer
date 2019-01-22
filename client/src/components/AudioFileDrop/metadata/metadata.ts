@@ -26,7 +26,7 @@ export class MetaData {
       tag.album = tag.album || '';
       tag.id = file.id;
       tag.src = `${settings.SERVER_BASE_URL}/${file.id}.mp3`;
-      tag.imageDataUrl = noCoverArtDataUrl;
+      tag.imageSrc = `${settings.SERVER_BASE_URL}/nocoverart.jpg`;
       tag.customStartTime = null;
       tag.customEndTime = null;
       delete tag.image; // No reason to keep all of this data in memory once we've generated the imageDataUrl

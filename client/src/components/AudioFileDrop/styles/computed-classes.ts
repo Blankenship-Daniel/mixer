@@ -1,12 +1,12 @@
 import classNames from 'classnames';
+import { AudioFileDropVariants } from '../variants';
 
 export const dragAndDropClasses = (
   classes,
   isHovered: boolean,
-  isHidden: boolean,
+  variant: AudioFileDropVariants,
 ): string => {
-  return classNames(classes.audioFileDropContainer, {
+  return classNames(classes.audioFileDropContainer, classes[variant], {
     [classes.hover]: isHovered,
-    [classes.hide]: isHidden,
   });
 };

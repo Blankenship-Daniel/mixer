@@ -29,6 +29,7 @@ app.get('/', (req, res) => {
 
 app.post('/upload', (req, res) => {
   const form = new formidable.IncomingForm();
+  form.maxFileSize = 10000 * 1024 * 1024;
 
   form.parse(req);
 

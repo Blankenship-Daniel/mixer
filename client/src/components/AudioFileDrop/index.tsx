@@ -9,18 +9,22 @@ import { sanitizeFiles } from './sanitize-files';
 import { setAudioMeta } from '../../store/audioMeta/actions';
 import { uploadFiles } from '../../services/upload-files';
 import { createRequestBody } from './creat-request-body';
+import { showAppWideLoading } from '../../store/appWideLoading/actions';
+import { AudioFileDropVariants } from './variants';
+import { Typography } from '@material-ui/core';
 
 const initialState = {
   isHovered: false,
-  isHidden: false,
 };
 
 interface IncomingProps {
   children: React.ReactChildren;
+  variant: AudioFileDropVariants;
 }
 
 interface PropsFromDispatch {
   setAudioMeta: Function;
+  showAppWideLoading: Function;
 }
 
 type Props = WithStyles<typeof styles> & IncomingProps & PropsFromDispatch;
@@ -30,13 +34,16 @@ class AudioFileDrop extends React.Component<Props, State> {
   readonly state: State = initialState;
 
   private onDrop = async e => {
-    this.setState({ isHidden: true, isHovered: false });
+    this.props.showAppWideLoading(true);
+    this.setState({ isHovered: false });
     const fileList: FileList = e.dataTransfer.files;
     const files: CustomFile[] = Array.from(fileList) as CustomFile[];
     const metaData: MetaData = new MetaData(sanitizeFiles(files));
     const audioMeta: AudioMetaTag[] = await metaData.getMetaData();
-    uploadFiles(createRequestBody(metaData.getFiles()));
+    const response = await uploadFiles(createRequestBody(metaData.getFiles()));
+    await response.text();
     this.props.setAudioMeta(audioMeta);
+    this.props.showAppWideLoading(false);
   };
 
   private onDragEnter = e => {
@@ -82,14 +89,16 @@ class AudioFileDrop extends React.Component<Props, State> {
         className={dragAndDropClasses(
           classes,
           this.state.isHovered,
-          this.state.isHidden,
+          this.props.variant,
         )}
         onDrop={this.onDropEvent}
         onDragEnter={this.onDragEnterEvent}
         onDragLeave={this.onDragLeaveEvent}
         onDragOver={this.onDragOverEvent}
       >
-        {this.props.children}
+        <Typography className={classes.dropZoneText} variant="subtitle1">
+          {this.props.children}
+        </Typography>
       </div>
     );
   }
@@ -99,6 +108,7 @@ const mapDispatchToProps = dispatch => {
   return bindActionCreators(
     {
       setAudioMeta,
+      showAppWideLoading,
     },
     dispatch,
   );

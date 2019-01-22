@@ -7,7 +7,7 @@ export interface AudioMetaTag {
   duration: string;
   genre: string;
   id: string;
-  imageDataUrl: string;
+  imageSrc: string;
   src: string;
   title: string;
   track: string;

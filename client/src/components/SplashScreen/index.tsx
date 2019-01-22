@@ -5,6 +5,7 @@ import { styles } from './styles';
 import Typography from '@material-ui/core/Typography';
 import { supportedFileTypes } from '../AudioFileDrop/sanitize-files/supported-file-types';
 import { AudioMetaTag } from '../AudioFileDrop/metadata';
+import { lang } from '../../config/lang/en';
 
 interface PropsFromState {
   audioMeta: AudioMetaTag[];
@@ -19,10 +20,10 @@ class SplashScreen extends React.Component<Props, State> {
       <div className={classes.splash}>
         <div>
           <Typography className={classes.spacing} variant="h2">
-            Drag and drop some music
+            {lang.splashScreenHeader}
           </Typography>
           <Typography className={classes.spacing} variant="subtitle1">
-            These are the audio types we currently support:{' '}
+            {`${lang.splashScreenSubtitle} `}
             <strong>{supportedFileTypes.join(', ')}</strong>
           </Typography>
         </div>
